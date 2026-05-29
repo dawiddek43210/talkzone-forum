@@ -1,0 +1,658 @@
+# TalkZone Forum — wersja z działającą nawigacją
+
+Skopiuj cały kod poniżej do pliku `index.html`.
+
+```html
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TalkZone Forum</title>
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      scroll-behavior:smooth;
+    }
+
+    body{
+      font-family:Arial, sans-serif;
+      background:#151515;
+      color:white;
+    }
+
+    a{
+      text-decoration:none;
+      color:white;
+    }
+
+    img{
+      max-width:100%;
+      border-radius:18px;
+    }
+
+    /* NAVBAR */
+
+    .navbar{
+      width:100%;
+      height:70px;
+      background:#1f1f1f;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 40px;
+      border-bottom:1px solid #2c2c2c;
+      position:sticky;
+      top:0;
+      z-index:100;
+    }
+
+    .logo{
+      font-size:28px;
+      font-weight:bold;
+      color:#ff9f43;
+    }
+
+    .nav-links{
+      display:flex;
+      gap:25px;
+    }
+
+    .nav-links a{
+      color:#ccc;
+      transition:0.3s;
+      font-weight:bold;
+    }
+
+    .nav-links a:hover{
+      color:#ff9f43;
+    }
+
+    .search-box input{
+      padding:10px 15px;
+      border:none;
+      border-radius:10px;
+      background:#2a2a2a;
+      color:white;
+      width:220px;
+    }
+
+    /* HERO */
+
+    .hero{
+      width:100%;
+      padding:60px 20px;
+      text-align:center;
+      background:linear-gradient(to right,#1f1f1f,#262626);
+      border-bottom:1px solid #2c2c2c;
+    }
+
+    .hero h1{
+      font-size:52px;
+      margin-bottom:20px;
+      color:#ffb347;
+    }
+
+    .hero p{
+      max-width:800px;
+      margin:auto;
+      color:#cfcfcf;
+      line-height:1.8;
+      font-size:18px;
+    }
+
+    /* MAIN */
+
+    .container{
+      width:100%;
+      display:grid;
+      grid-template-columns:250px 1fr 300px;
+      gap:20px;
+      padding:20px;
+    }
+
+    /* SIDEBAR */
+
+    .sidebar{
+      background:#1d1d1d;
+      padding:20px;
+      border-radius:20px;
+      height:fit-content;
+      position:sticky;
+      top:90px;
+    }
+
+    .sidebar h2{
+      margin-bottom:20px;
+      color:#ffb347;
+    }
+
+    .menu-item{
+      padding:14px;
+      border-radius:12px;
+      margin-bottom:10px;
+      background:#252525;
+      cursor:pointer;
+      transition:0.3s;
+    }
+
+    .menu-item:hover{
+      background:#333;
+      transform:translateX(5px);
+    }
+
+    .active-category{
+      background:#ff9f43;
+    }
+
+    /* POSTS */
+
+    .feed{
+      display:flex;
+      flex-direction:column;
+      gap:20px;
+    }
+
+    .post{
+      background:#1e1e1e;
+      border-radius:20px;
+      padding:20px;
+      transition:0.3s;
+      border:1px solid #2d2d2d;
+    }
+
+    .post:hover{
+      transform:translateY(-4px);
+      border-color:#ff9f43;
+    }
+
+    .post-image{
+      margin-bottom:20px;
+      overflow:hidden;
+      border-radius:18px;
+    }
+
+    .post-header{
+      display:flex;
+      align-items:center;
+      margin-bottom:15px;
+    }
+
+    .avatar{
+      width:50px;
+      height:50px;
+      border-radius:50%;
+      background:#ff9f43;
+      margin-right:15px;
+    }
+
+    .username{
+      font-weight:bold;
+      font-size:17px;
+    }
+
+    .time{
+      color:#999;
+      font-size:14px;
+    }
+
+    .post-title{
+      font-size:26px;
+      margin-bottom:15px;
+      color:#fff;
+    }
+
+    .post-content{
+      color:#cfcfcf;
+      line-height:1.7;
+      margin-bottom:20px;
+    }
+
+    .post-actions{
+      display:flex;
+      gap:25px;
+      color:#aaa;
+    }
+
+    .action{
+      cursor:pointer;
+      transition:0.3s;
+    }
+
+    .action:hover{
+      color:#ff9f43;
+    }
+
+    /* RIGHT PANEL */
+
+    .right-panel{
+      display:flex;
+      flex-direction:column;
+      gap:20px;
+    }
+
+    .card{
+      background:#1d1d1d;
+      padding:20px;
+      border-radius:20px;
+    }
+
+    .card h3{
+      margin-bottom:15px;
+      color:#ffb347;
+    }
+
+    .trend{
+      padding:12px;
+      background:#252525;
+      border-radius:12px;
+      margin-bottom:10px;
+      transition:0.3s;
+      cursor:pointer;
+    }
+
+    .trend:hover{
+      background:#333;
+    }
+
+    .btn{
+      width:100%;
+      padding:14px;
+      border:none;
+      border-radius:14px;
+      background:#ff9f43;
+      color:white;
+      font-size:16px;
+      font-weight:bold;
+      cursor:pointer;
+      transition:0.3s;
+    }
+
+    .btn:hover{
+      background:#ff7b00;
+      transform:scale(1.03);
+    }
+
+    /* SEKCJE */
+
+    .section{
+      width:100%;
+      padding:80px 20px;
+      border-top:1px solid #2c2c2c;
+    }
+
+    .section-box{
+      max-width:1100px;
+      margin:auto;
+      background:#1d1d1d;
+      padding:40px;
+      border-radius:24px;
+    }
+
+    .section-box h2{
+      color:#ffb347;
+      margin-bottom:20px;
+      font-size:40px;
+    }
+
+    .section-box p{
+      color:#d0d0d0;
+      line-height:1.9;
+      margin-bottom:20px;
+    }
+
+    .gallery{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+      gap:20px;
+      margin-top:30px;
+    }
+
+    /* MOBILE */
+
+    @media(max-width:1100px){
+
+      .container{
+        grid-template-columns:1fr;
+      }
+
+      .sidebar{
+        position:relative;
+        top:0;
+      }
+
+    }
+
+    @media(max-width:700px){
+
+      .navbar{
+        flex-direction:column;
+        height:auto;
+        gap:15px;
+        padding:20px;
+      }
+
+      .search-box input{
+        width:100%;
+      }
+
+      .post-title{
+        font-size:22px;
+      }
+
+      .hero h1{
+        font-size:38px;
+      }
+
+      .section-box h2{
+        font-size:30px;
+      }
+
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+
+  <div class="navbar">
+
+    <div class="logo">TalkZone</div>
+
+    <div class="nav-links">
+      <a href="#home">Home</a>
+      <a href="#popular">Popular</a>
+      <a href="#categories">Categories</a>
+      <a href="#profile">Profile</a>
+    </div>
+
+    <div class="search-box">
+      <input type="text" placeholder="Szukaj...">
+    </div>
+
+  </div>
+
+  <!-- HERO -->
+
+  <section class="hero" id="home">
+
+    <h1>Witaj w TalkZone 🔥</h1>
+
+    <p>
+      Nowoczesne forum inspirowane Redditem.
+      Rozmawiaj o grach, AI, programowaniu, muzyce i wszystkim co Cię interesuje.
+      Dodawaj posty, komentuj i poznawaj nowych ludzi.
+    </p>
+
+  </section>
+
+  <!-- MAIN -->
+
+  <div class="container">
+
+    <!-- SIDEBAR -->
+
+    <div class="sidebar" id="categories">
+
+      <h2>Kategorie</h2>
+
+      <div class="menu-item active-category"
+           onclick="filterPosts('all', this)">
+        🔥 Wszystko
+      </div>
+
+      <div class="menu-item"
+           onclick="filterPosts('programowanie', this)">
+        💻 Programowanie
+      </div>
+
+      <div class="menu-item"
+           onclick="filterPosts('gry', this)">
+        🎮 Gry
+      </div>
+
+      <div class="menu-item"
+           onclick="filterPosts('ai', this)">
+        🤖 AI
+      </div>
+
+      <div class="menu-item"
+           onclick="filterPosts('muzyka', this)">
+        🎵 Muzyka
+      </div>
+
+    </div>
+
+    <!-- FEED -->
+
+    <div class="feed">
+
+      <!-- POST -->
+
+      <div class="post"
+           data-category="programowanie">
+
+        <div class="post-image">
+          <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=1200&auto=format&fit=crop" alt="programowanie">
+        </div>
+
+        <div class="post-header">
+
+          <div class="avatar"></div>
+
+          <div>
+            <div class="username">KacperDev</div>
+            <div class="time">2 godziny temu</div>
+          </div>
+
+        </div>
+
+        <div class="post-title">
+          Jak zacząć naukę JavaScript?
+        </div>
+
+        <div class="post-content">
+          Chciałbym wejść mocniej we frontend development.
+          Znam HTML i CSS, ale JavaScript wydaje się trudniejszy.
+        </div>
+
+        <div class="post-actions">
+          <div class="action">⬆ 124</div>
+          <div class="action">💬 32 komentarze</div>
+          <div class="action">⭐ Zapisz</div>
+        </div>
+
+      </div>
+
+      <!-- POST -->
+
+      <div class="post"
+           data-category="gry">
+
+        <div class="post-image">
+          <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1200&auto=format&fit=crop" alt="gry">
+        </div>
+
+        <div class="post-header">
+
+          <div class="avatar"></div>
+
+          <div>
+            <div class="username">GameHunter</div>
+            <div class="time">5 godzin temu</div>
+          </div>
+
+        </div>
+
+        <div class="post-title">
+          GTA 6 będzie najlepszą grą dekady?
+        </div>
+
+        <div class="post-content">
+          Rockstar znowu podnosi poprzeczkę 🔥
+          Jakie macie oczekiwania wobec GTA 6?
+        </div>
+
+        <div class="post-actions">
+          <div class="action">⬆ 342</div>
+          <div class="action">💬 89 komentarzy</div>
+          <div class="action">⭐ Zapisz</div>
+        </div>
+
+      </div>
+
+      <!-- POST -->
+
+      <div class="post"
+           data-category="ai">
+
+        <div class="post-image">
+          <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=1200&auto=format&fit=crop" alt="ai">
+        </div>
+
+        <div class="post-header">
+
+          <div class="avatar"></div>
+
+          <div>
+            <div class="username">AIWizard</div>
+            <div class="time">1 dzień temu</div>
+          </div>
+
+        </div>
+
+        <div class="post-title">
+          Czy AI zabierze pracę programistom?
+        </div>
+
+        <div class="post-content">
+          ChatGPT i AI coraz bardziej rozwijają możliwości generowania kodu.
+          Jak myślicie, jak będzie wyglądać przyszłość?
+        </div>
+
+        <div class="post-actions">
+          <div class="action">⬆ 211</div>
+          <div class="action">💬 61 komentarzy</div>
+          <div class="action">⭐ Zapisz</div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- RIGHT PANEL -->
+
+    <div class="right-panel">
+
+      <div class="card" id="popular">
+
+        <h3>🔥 Popularne</h3>
+
+        <div class="trend"># JavaScript</div>
+        <div class="trend"># GTA6</div>
+        <div class="trend"># AI</div>
+        <div class="trend"># React</div>
+        <div class="trend"># Frontend</div>
+
+      </div>
+
+      <div class="card">
+
+        <h3>🚀 Utwórz Post</h3>
+
+        <button class="btn">
+          Dodaj pytanie
+        </button>
+
+      </div>
+
+      <div class="card" id="profile">
+
+        <h3>👑 Profil użytkownika</h3>
+
+        <p style="color:#cfcfcf; line-height:1.8;">
+          Nick: CodeMaster <br><br>
+          Posty: 124 <br><br>
+          Komentarze: 892 <br><br>
+          Reputacja: 12 430 punktów 🔥
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- DODATKOWE SEKCJE -->
+
+  <section class="section">
+
+    <div class="section-box">
+
+      <h2>Dlaczego TalkZone?</h2>
+
+      <p>
+        TalkZone to nowoczesna platforma społecznościowa inspirowana Reddit i Discord.
+        Możesz tworzyć dyskusje, odkrywać nowe trendy i poznawać ludzi o podobnych zainteresowaniach.
+      </p>
+
+      <div class="gallery">
+
+        <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=1200&auto=format&fit=crop">
+
+        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200&auto=format&fit=crop">
+
+        <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1200&auto=format&fit=crop">
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- JAVASCRIPT -->
+
+  <script>
+
+    function filterPosts(category, element){
+
+      const posts = document.querySelectorAll('.post');
+
+      posts.forEach(post => {
+
+        if(category === 'all'){
+          post.style.display = 'block';
+        }
+
+        else if(post.dataset.category === category){
+          post.style.display = 'block';
+        }
+
+        else{
+          post.style.display = 'none';
+        }
+
+      });
+
+      const menuItems =
+        document.querySelectorAll('.menu-item');
+
+      menuItems.forEach(item => {
+        item.classList.remove('active-category');
+      });
+
+      element.classList.add('active-category');
+
+    }
+
+  </script>
+
+</body>
+</html>
+```
